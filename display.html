@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>表示画面</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   ここだけ、あなたのGitHubの情報に合わせて書き換えてください。
+   秘密の情報は含まれないので、このまま教えてもらえれば
+   Claudeが代わりに埋めることもできます。
+   ========================================================= */
+</style>
+<script>
+  window.__CONFIG__ = {
+    owner: "chokkurahoroka-creator",
+    repo: "stream-display2",
+    branch: "main",
+    path: "display.png"
+  };
+</script>
+<style>
+  :root{
+    --bg-a:#2B2640;
+    --bg-b:#FF5C8A;
+    --bg-c:#3DDC97;
+    --ink:#FFF6EE;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;height:100%;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,92,138,0.35), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(61,220,151,0.30), transparent 45%),
+      var(--bg-a);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Zen Maru Gothic', sans-serif;
+    overflow:hidden;
+  }
+  .stage{
+    width:min(92vw, 92vh * 4 / 3);
+    max-width:1400px;
+  }
+  .slot{
+    position:relative;border-radius:26px;padding:10px;
+    background:linear-gradient(120deg,#FFD166,#FF5C8A,#7C83FD,#3DDC97,#FFD166);
+    background-size:300% 300%;
+    animation:holo 9s ease infinite;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  }
+  @keyframes holo{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .slot-inner{
+    background:#1c1830;border-radius:18px;overflow:hidden;
+    aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .slot-inner img{
+    width:100%;height:100%;object-fit:contain;display:block;
+    opacity:0;transition:opacity .35s ease;
+  }
+  .slot-inner img.show{opacity:1;}
+  .placeholder{
+    color:rgba(255,246,238,0.55);text-align:center;font-size:clamp(14px,1.6vw,20px);
+    padding:40px;line-height:1.8;
+  }
+  .placeholder b{color:var(--ink);}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="slot">
+      <div class="slot-inner" id="slot">
+        <div class="placeholder" id="placeholder">画像を読み込んでいます…</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const cfg = window.__CONFIG__;
+  const IMAGE_URL = `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${cfg.path}`;
+  const isUnconfigured = cfg.owner === "YOUR_GITHUB_USERNAME";
+
+  const slot = document.getElementById('slot');
+  let currentImg = null;
+
+  function setPlaceholder(html){
+    slot.innerHTML = `<div class="placeholder">${html}</div>`;
+    currentImg = null;
+  }
+
+  function refresh(){
+    if(isUnconfigured){
+      setPlaceholder('<b>設定が必要です</b><br>display.html 内の owner / repo を入力してください');
+      return;
+    }
+    const img = new Image();
+    img.onload = ()=>{
+      if(currentImg) currentImg.remove();
+      slot.innerHTML = '';
+      img.classList.add('show');
+      slot.appendChild(img);
+      currentImg = img;
+    };
+    img.onerror = ()=>{
+      if(!currentImg) setPlaceholder('まだ画像が設定されていません');
+      // 既に表示中の画像がある場合は、一時的な取得失敗で消さずに保持する
+    };
+    img.src = IMAGE_URL + '?t=' + Date.now();
+  }
+
+  refresh();
+  setInterval(refresh, 30000); // 30秒ごとに最新の画像をチェック
+</script>
+</body>
+</html>
